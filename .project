@@ -3,6 +3,7 @@
 	<name>zsp-go</name>
 	<comment></comment>
 	<projects>
+		<project>zhscript-go</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
