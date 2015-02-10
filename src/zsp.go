@@ -3,28 +3,24 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"net/url"
 	"os"
-	"path/filepath"
 	"strings"
-    "strconv"
 	. "github.com/zzzzzzzzzzz0/zhscript-go/zhscript"
+	"util4"
 )
 
 var s_begin_ = Kws_.Begin_yuanyang.String()
 var s_end_ = Kws_.End_yuanyang.String() + Kws_.Juhao.String()
 var r_ = strings.NewReplacer("<%", s_end_, "%>", s_begin_)
-func content_convert__(b []byte) []byte {
+func content_convert__(b []byte, src string) []byte {
+	if !util4.Ends__(src, ".zsp") {
+		return b
+	}
 	s := string(b)
 	s = r_.Replace(s)
 	s = s_begin_ + s + s_end_
 	return []byte(s)
-}
-
-func dir__(dir string) string {
-	if !strings.HasSuffix(dir, "/") {
-		dir += "/"
-	}
-	return dir
 }
 
 type zsp___ struct {
@@ -33,8 +29,13 @@ type zsp___ struct {
 	addr, index string
 }
 
+type data___ struct {
+	r *http.Request
+	r_is_parse bool
+}
+
 //r.URL.RawQuery
-func (this *zsp___) I__(qv *Qv___, s ...string) (goto1 *Goto___, err1 *Errinfo___, ret string) {
+func (this *zsp___) I__(qv *Qv___, s ...string) (goto1 *Goto___, err1 *Errinfo___, ret, ret_err string) {
 	if len(s) == 0 {
 		return
 	}
@@ -49,128 +50,48 @@ func (this *zsp___) I__(qv *Qv___, s ...string) (goto1 *Goto___, err1 *Errinfo__
 		}
 		return false
 	}
+	s = s[1:]
+
+	var no_use bool
+	no_use, ret, ret_err, goto1 = util4.Util__(qv, tag, s, err__, buzu__)
+	if !no_use {
+		return
+	}
+
 	switch tag {
 	case "得参":
-		if buzu__(2) {
-	        return
+		data := qv.Not_my.(*data___)
+		r := data.r
+		if len(s) == 0 {
+			ret, _ = url.QueryUnescape(r.URL.RawQuery)
+			return
 		}
-		if r, ok := qv.Not_my.(*http.Request); ok {
+		if !data.r_is_parse {
 			r.ParseForm()
-			ret = r.Form.Get(s[1])
+			data.r_is_parse = true
 		}
+		ret = r.Form.Get(s[0])
 		return
-	case "得环境变量":
-		if buzu__(2) {
-	        return
-		}
-		ret = os.Getenv(s[1])
-		return
-	case "尾匹配":
-		if buzu__(3) {
-	        return
-		}
-		if strings.HasSuffix(s[1], s[2]) {
-			ret = "1"
-		}
-		return
-	case "遍历目录":
-		if buzu__(3) {
-	        return
-		}
-		dir := dir__(s[1])
-	    fi, err := os.Stat(dir)
-	    if os.IsNotExist(err) {
-	    	err__(dir + " 不存在")
-	        return
-	    }
-	    if !fi.IsDir() {
-	    	err__(dir + " 不是目录")
-	        return
-	    }
-    	code := s[2]
-    	start := -1
-    	length := 0
-    	if len(s) > 4 {
-    		start, _ = strconv.Atoi(s[3])
-    		length, _ = strconv.Atoi(s[4])
-    	}
-    	i2 := 0
-		err2 := filepath.Walk(dir, func(path string, f os.FileInfo, err error) error {
-			if f == nil {
-				return err
-			}
-			if f.IsDir() {
-				return nil
-			}
-			path = path[len(dir):]
-			if path == "" {
-				return nil
-			}
-
-			i2++
-			if start >= 0 && length >= 0 {
-				if i2 < start || i2 >= start + length {
-					return nil
-				}
-			}
-
-			var buf *Buf___
-			buf, goto1, err1 = this.zz__(code, false, qv, qv.Not_my, path)
-			if err1 == nil {
-				ret += buf.String()
-			}
-			return nil
-		})
-		if err2 != nil {
-			err__(s[1] + " " + err2.Error())
-	        return
-        }
-    	if len(s) > 5 {
-			var buf *Buf___
-			buf, goto1, err1 = this.zz__(s[5], false, qv, qv.Not_my, strconv.Itoa(i2))
-			if err1 == nil {
-				ret += buf.String()
-			}
-    	}
-	    return
 	case "配置":
-		this.parse__(s[1:])
+		this.parse__(s, false)
 		return
 	}
 	err__(tag + " 不支持")
 	return
 }
 
-func (this *zsp___) zz__(src string, src_is_file bool, up_qv *Qv___, r interface{}, s ...string) (buf *Buf___, goto1 *Goto___, err *Errinfo___) {
-	var args Args___
-	if src_is_file {
-		args.Src_file__(src)
-	} else {
-		args.Src_code__(src)
-	}
-	args.Add__(s...)
-	buf = New_buf__()
-	var qv *Qv___
-	qv, err = New_qv__(&args, up_qv)
-	if err == nil {
-		qv.Not_my = r
-		goto1, err = qv.Z__(0, buf)
-	}
-	return
-}
-
 func (this zsp___) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	src := r.URL.Path
-	if strings.HasSuffix(src, "/") {
+	if util4.Ends__(src, "/") {
 		src += this.index
 	}
-	if strings.HasSuffix(src, ".zsp") {
-		buf, _, err := this.zz__(src, true, this.main_qv, r)
-		if err != nil {
-			fmt.Fprint(w, buf, err)
-			return
-		}
+	if util4.Ends__(src, ".zsp") {
+		buf, _, err := util4.Zs__(src, true, this.main_qv, &data___{r:r})
 		fmt.Fprint(w, buf)
+		if err != nil {
+			fmt.Fprint(w, err)
+			fmt.Println(err)
+		}
 		return
 	}
 	if src2, ok := Get_path__(src); ok {
@@ -180,27 +101,36 @@ func (this zsp___) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	http.NotFound(w, r)
 }
 
-func (this *zsp___) parse__(a []string) (err *Errinfo___) {
+func (this *zsp___) parse__(a []string, shou1 bool) (shou []string, err *Errinfo___) {
 	tag := []string {"-r", "--root", "-a", "--addr", "-i", "--index",}
 	it := -1
-	for _, s := range a {
+	for1:
+	for i := 0; i < len(a); i++ {
+		s := a[i]
 		for i1, s1 := range tag {
 			if s1 == s {
 				it = i1
-				break
+				continue for1
 			}
 		}
 		if it < 0 {
-			err = New_errinfo__(s, Errs_.Exist)
-			break
+			if shou1 {
+				shou = append(shou, s)
+				continue
+			} else {
+				err = New_errinfo__(s, Errs_.Exist)
+				break
+			}
 		}
 		switch it {
 		case 0, 1:
-			Known_path_add__(dir__(s))
+			Known_path_add__(util4.Dir__(s))
 		case 2, 3:
 			this.addr = s
+			it = -1
 		case 4, 5:
 			this.index = s
+			it = -1
 		}
 	}
 	return
@@ -212,18 +142,23 @@ func (this *zsp___) z__() {
 	if err == nil {
 		this.index = "index.zsp"
 		this.addr = "127.0.0.1:4000"
-		err = this.parse__(z.Args.A)
+		var a []string
+		a, err = this.parse__(z.Args.A, true)
 		if err == nil {
-			this.main_qv, err = z.New_main_qv__(nil)
+			var args Args___
+			args.Add__(a...)
+			this.main_qv, err = z.New_main_qv__(&args)
 			if err == nil {
-				err = this.main_qv.Set_var__("让我",
-				Kws_.Call.String() + "I__" +
+				name := New_buf__()
+				name.WriteString("让我")
+				val := New_buf__()
+				val.WriteString(Kws_.Call.String() + "I__" +
 				Kws_.Dunhao.String() +
 				Kws_.Kaidanyinhao.String() +
 				Kws_.Args.String() +
 				Kws_.Bidanyinhao.String() +
-				Kws_.Juhao.String(),
-				true, Kws_.Def)
+				Kws_.Juhao.String())
+				err = this.main_qv.Set_var__(name, val, true, false, Kws_.Def)
 			}
 		}
 	}
@@ -232,10 +167,9 @@ func (this *zsp___) z__() {
 		return
 	}
 	if z.Args.Src_type == Src_is_file_ {
-		buf, _, err := this.zz__(z.Args.Src, true, this.main_qv, nil)
+		buf, _, err := util4.Zs__(z.Args.Src, true, this.main_qv, nil)
 		fmt.Print(buf.String())
 		if err != nil {
-			fmt.Println()
 			fmt.Println(err)
 		}
 	} else {
