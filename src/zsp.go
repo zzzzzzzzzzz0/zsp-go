@@ -10,7 +10,7 @@ import (
 	"util4"
 )
 
-var s_begin_ = Kws_.Begin_yuanyang.String()
+var s_begin_ = Kws_.Juhao.String() + Kws_.Begin_yuanyang.String()
 var s_end_ = Kws_.End_yuanyang.String() + Kws_.Juhao.String()
 var r_ = strings.NewReplacer("<%", s_end_, "%>", s_begin_)
 func content_convert__(b []byte, src string) []byte {
@@ -87,7 +87,7 @@ func (this zsp___) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	if util4.Ends__(src, ".zsp") {
 		buf, _, err := util4.Zs__(src, true, this.main_qv, &data___{r:r})
-		fmt.Fprint(w, buf)
+		fmt.Fprint(w, buf.S__())
 		if err != nil {
 			fmt.Fprint(w, err)
 			fmt.Println(err)
