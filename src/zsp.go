@@ -6,6 +6,7 @@ import (
 	"net/url"
 	"os"
 	"strings"
+	"flag"
 	. "github.com/zzzzzzzzzzz0/zhscript-go/zhscript"
 	"util4"
 )
@@ -72,9 +73,6 @@ func (this *zsp___) I__(qv *Qv___, s ...string) (goto1 *Goto___, err1 *Errinfo__
 		}
 		ret = r.Form.Get(s[0])
 		return
-	case "配置":
-		this.parse__(s, false)
-		return
 	}
 	err__(tag + " 不支持")
 	return
@@ -85,81 +83,48 @@ func (this zsp___) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if util4.Ends__(src, "/") {
 		src += this.index
 	}
-	if util4.Ends__(src, ".zsp") {
-		buf, _, err := util4.Zs__(src, true, this.main_qv, &data___{r:r})
-		fmt.Fprint(w, buf.S__())
-		if err != nil {
-			fmt.Fprint(w, err)
-			fmt.Println(err)
-		}
-		return
-	}
 	if src2, ok := Get_path__(src); ok {
-		http.ServeFile(w, r, src2)
+		if util4.Ends__(src, ".zsp") {
+			buf, _, err := util4.Zs__(src2, true, this.main_qv, &data___{r:r})
+			fmt.Fprint(w, buf.S__())
+			if err != nil {
+				fmt.Fprint(w, err)
+				fmt.Println(err)
+			}
+		} else {
+			http.ServeFile(w, r, src2)
+		}
 		return
 	}
 	http.NotFound(w, r)
-}
-
-func (this *zsp___) parse__(a []string, shou1 bool) (shou []string, err *Errinfo___) {
-	tag := []string {"-r", "--root", "-a", "--addr", "-i", "--index",}
-	it := -1
-	for1:
-	for i := 0; i < len(a); i++ {
-		s := a[i]
-		for i1, s1 := range tag {
-			if s1 == s {
-				it = i1
-				continue for1
-			}
-		}
-		if it < 0 {
-			if shou1 {
-				shou = append(shou, s)
-				continue
-			} else {
-				err = New_errinfo__(s, Errs_.Exist)
-				break
-			}
-		}
-		switch it {
-		case 0, 1:
-			Known_path_add__(util4.Dir__(s))
-		case 2, 3:
-			this.addr = s
-			it = -1
-		case 4, 5:
-			this.index = s
-			it = -1
-		}
-	}
-	return
 }
 
 func (this *zsp___) z__() {
 	z, err := New__(os.Args, content_convert__, this)
 	this.z = z
 	if err == nil {
-		this.index = "index.zsp"
-		this.addr = "127.0.0.1:4000"
-		var a []string
-		a, err = this.parse__(z.Args.A, true)
+		var root string
+		flag.StringVar(&root, "r", ".", "root")
+		flag.StringVar(&this.addr, "a", ":4000", "侦听地址")
+		flag.StringVar(&this.index, "i", "index.zsp", "索引页")
+	    flag.CommandLine.Parse(z.Args.A)
+		Known_path_add__(util4.Dir__(root))
+
+		var args Args___
+		println(flag.Args())
+		args.Add__(flag.Args()...)
+		this.main_qv, err = z.New_main_qv__(&args)
 		if err == nil {
-			var args Args___
-			args.Add__(a...)
-			this.main_qv, err = z.New_main_qv__(&args)
-			if err == nil {
-				name := New_buf__()
-				name.WriteString("让我")
-				val := New_buf__()
-				val.WriteString(Kws_.Call.String() + "I__" +
-				Kws_.Dunhao.String() +
-				Kws_.Kaidanyinhao.String() +
-				Kws_.Args.String() +
-				Kws_.Bidanyinhao.String() +
-				Kws_.Juhao.String())
-				err = this.main_qv.Set_var__(name, val, true, false, Kws_.Def)
-			}
+			name := New_buf__()
+			name.WriteString("让我")
+			val := New_buf__()
+			val.WriteString(Kws_.Call.String() + "I__" +
+			Kws_.Dunhao.String() +
+			Kws_.Kaidanyinhao.String() +
+			Kws_.Args.String() +
+			Kws_.Bidanyinhao.String() +
+			Kws_.Juhao.String())
+			err = this.main_qv.Set_var__(name, val, true, false, Kws_.Def)
 		}
 	}
 	if err != nil {

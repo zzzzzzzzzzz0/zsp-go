@@ -82,6 +82,13 @@ func Util__(qv *Qv___, k string, s []string, err__ func(s string), buzu__ func(i
 		}
 		return
 
+		case "得目录名":
+		if buzu__(1) {
+			return
+		}
+		ret = filepath.Dir(s[0])
+		return
+
 		case "遍历目录":
 		if buzu__(2) {
 			return
