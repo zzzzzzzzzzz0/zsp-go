@@ -1,193 +1,92 @@
 package util4
 
 import (
-	"strings"
+	"github.com/zzzzzzzzzzz0/zhscript-go/zhscript"
 	"strconv"
-	"os"
-	"path/filepath"
-	"os/exec"
-	"regexp"
-	. "github.com/zzzzzzzzzzz0/zhscript-go/zhscript"
+	"math/rand"
+	"time"
 )
 
-func Zs__(src string, src_is_file bool, up_qv *Qv___, r interface{}, s ...string) (buf *Buf___, goto1 *Goto___, err *Errinfo___) {
-	var args Args___
-	if src_is_file {
-		args.Src_file__(src)
-	} else {
-		args.Src_code__(src)
-	}
-	args.Add__(s...)
-	buf = New_buf__()
-	var qv *Qv___
-	qv, err = New_qv__(&args, up_qv)
-	if err == nil {
-		qv.Not_my = r
-		goto1, err = qv.Z__(0, buf)
-	}
-	return
-}
-
-func Dir__(dir string) string {
-	if !Ends__(dir, "/") {
-		dir += "/"
-	}
-	return dir
-}
-
-func Ends__(s0, s1 string) bool {
-	return strings.HasSuffix(s0, s1)
-}
-func Starts__(s0, s1 string) bool {
-	return strings.HasPrefix(s0, s1)
-}
-
-func Util__(qv *Qv___, k string, s []string, err__ func(s string), buzu__ func(i int) bool) (no_use bool, ret, ret_err string, goto1 *Goto___) {
+func Util__(qv *zhscript.Qv___, k string, s []interface{}, s__ func(interface{}) (string, bool),
+err__ func(...interface{}), buzu__ func(int) bool, buzhichi__ func(...interface{}),
+ret__ func(...interface{})) (no_use bool, goto1 *zhscript.Goto___) {
 	switch k {
-		case "得环境变量":
-		if buzu__(1) {
+	case "随机数":
+		//rand.Seed(time.Now().UnixNano())
+		r := rand.New(rand.NewSource(time.Now().UnixNano()))
+		max := 100
+		min := 0
+		l := len(s)
+		var err error
+		if l >= 1 {
+			s0, ok := s__(s[0]); if !ok {return}
+			if s0 != "" {
+				max, err = strconv.Atoi(s0)
+				if err != nil {
+					err__(err)
+					return
+				}
+			}
+		}
+		if l >= 2 {
+			s1, ok := s__(s[1]); if !ok {return}
+			if s1 != "" {
+				min, err = strconv.Atoi(s1)
+				if err != nil {
+					err__(err)
+					return
+				}
+			}
+		}
+		if max < min {
+			err__(k + "大小")
 			return
 		}
-		ret = os.Getenv(s[0])
+		ret__(strconv.Itoa(r.Intn(max - min) + min))
 		return
-
-		case "尾匹配":
-		if buzu__(2) {
-			return
-		}
-		if Ends__(s[0], s[1]) {
-			ret = "1"
-		}
-		return
-		case "头匹配":
-		if buzu__(2) {
-			return
-		}
-		if Starts__(s[0], s[1]) {
-			ret = "1"
-		}
-		return
-
-		case "正则配":
-		if buzu__(2) {
-			return
-		}
+	case "迭代":
+		var (
+			err1 *zhscript.Errinfo___
+			buf *zhscript.Buf___
+			kw *zhscript.Keyword___
+			ret string
+		)
+		s0, ok := s__(s[0]); if !ok {return}
 		for i := 1; i < len(s); i++ {
-			re, err := regexp.Compile(s[i])
-			if err != nil {
-				ret_err = err.Error()
-				return
-			}
-			ret += re.FindString(s[0])
-		}
-		return
-
-		case "得目录名":
-		if buzu__(1) {
-			return
-		}
-		ret = filepath.Dir(s[0])
-		return
-
-		case "遍历目录":
-		if buzu__(2) {
-			return
-		}
-		dir := Dir__(s[0])
-		fi, err := os.Stat(dir)
-		if os.IsNotExist(err) {
-			ret_err = (dir + " 不存在")
-			return
-		}
-		if !fi.IsDir() {
-			ret_err = (dir + " 不是目录")
-			return
-		}
-		
-		var inc_subdir, ret_dir, only_dir, only_root_file bool
-		for i1 := 1; i1 < len(s) - 1; i1++ {
-			switch s[i1] {
-				case "含子目录":
-				inc_subdir = true
-				case "返回目录":
-				ret_dir = true
-				case "仅目录":
-				only_dir = true
-				case "仅根文件":
-				only_root_file = true
-				default:
-				err__(s[i1] + " 不识别选项")
-				return
-			}
-		}
-	
-		var err1 *Errinfo___
-		var buf *Buf___
-		code := s[len(s) - 1]
-		
-		err2 := filepath.Walk(dir, func(path string, fi2 os.FileInfo, err error) error {
-			if fi2 == nil {
-				return err
-			}
-			if fi2.IsDir() {
-				if path == dir {
-					return nil
-				}
-				if !ret_dir {
-					if !inc_subdir {
-						return filepath.SkipDir
-					}
-					return nil
-				}
-			} else {
-				if only_dir {
-					return nil
-				}
-			}
-			path = path[len(dir):]
-			if fi2.IsDir() {
-				if ret_dir {
-					if !inc_subdir && strings.Contains(path, "/") {
-						return filepath.SkipDir
-					}
-					path = Dir__(path)
-				}
-			} else {
-				if only_root_file && strings.Contains(path, "/") {
-					return nil
-				}
-			}
-	
-			buf, goto1, err1 = Zs__(code, false, qv, qv.Not_my, path)
+			si, ok := s__(s[i]); if !ok {return}
+			buf, goto1, err1 = Zs2__(s0, qv, si)
 			if err1 != nil {
-				return err1
+				err__(err1)
+				break
 			}
-			if goto1 != nil && goto1.Kw == Kws_.Continue {
-				goto1 = nil
+			ret += buf.S__()
+			kw, goto1 = Goto1__(goto1)
+			if kw == zhscript.Kws_.Continue {
+				continue
 			}
-			ret += buf.String()
-			return nil
-		})
-		if err2 != nil {
-			err__(dir + " " + err2.Error())
-			return
+			if kw == zhscript.Kws_.Break {
+				break
+			}
+			if goto1 != nil {
+				break
+			}
 		}
+		ret__(ret)
 		return
-
-		case "遍历变量":
+	case "遍历变量":
 		if buzu__(1) {
 			return
 		}
-		var err1 *Errinfo___
-		var buf *Buf___
-		code := s[0]
-		fa := func (a *List___) (s string) {
-			a.Find__(func (e *Em___) bool {
-				s += Kws_.Kaifangkuohao.String() + e.String() + Kws_.Bifangkuohao.String()
+		var err1 *zhscript.Errinfo___
+		var buf *zhscript.Buf___
+		code, ok := s__(s[0]); if !ok {return}
+		fa := func (a *zhscript.Strings___) (s string) {
+			a.Find__(func (s2 string) bool {
+				s += zhscript.Kws_.Kaifangkuohao.String() + s2 + zhscript.Kws_.Bifangkuohao.String()
 				return false
-			});
+			})
 			return
-		};
+		}
 		fb := func (b bool) string {
 			if(b) {
 				return "1"
@@ -195,33 +94,37 @@ func Util__(qv *Qv___, k string, s []string, err__ func(s string), buzu__ func(i
 				return "0"
 			}
 		}
-		For_var__(qv, func(v *Var___, i int) bool {
-			buf, goto1, err1 = Zs__(code, false, qv, qv.Not_my,
-				v.Name, v.Val,
-				fa(v.Annota), fa(v.Annota_val),
-				fb(v.Is_lock), fb(v.Is_no_arg),
-				v.Kw.String(), strconv.Itoa(i))
-			if err1 != nil {
-				err__(err1.Error())
-				return true
+		var ret string
+		qv2 := qv
+		var i int
+		for {
+			if qv2 == nil {
+				break
 			}
-			if goto1 != nil {
-				return true
+			if qv2.Vars.Ls.Find__(func(e *zhscript.Em___) bool {
+				v := zhscript.Var__(e)
+				buf, goto1, err1 = Zs2__(code, qv,
+					v.Name, v.Val.S,
+					fa(v.Annota_val),
+					fb(v.Is_lock),
+					v.Kw.String(),
+					strconv.Itoa(i))
+				if err1 != nil {
+					err__(err1)
+					return true
+				}
+				if goto1 != nil {
+					return true
+				}
+				ret += buf.S__()
+				return false
+			}) {
+				break
 			}
-			return Bool__(buf.String())
-		});
-		return
-		
-		case "重定向输出":
-		if buzu__(1) {
-			return
+			qv2 = qv2.Up
+			i++
 		}
-		cmd := exec.Command(s[0], s[1:]...)
-		buf, err := cmd.Output()
-		if err != nil {
-			ret_err = err.Error()
-		}
-		ret = string(buf)
+		ret__(ret)
 		return
 	}
 	no_use = true
