@@ -77,9 +77,9 @@ ret__ func(...interface{})) (no_use bool, goto1 *zhscript.Goto___) {
 		if buzu__(1) {
 			return
 		}
+		code, ok := s__(s[0]); if !ok {return}
 		var err1 *zhscript.Errinfo___
 		var buf *zhscript.Buf___
-		code, ok := s__(s[0]); if !ok {return}
 		fa := func (a *zhscript.Strings___) (s string) {
 			a.Find__(func (s2 string) bool {
 				s += zhscript.Kws_.Kaifangkuohao.String() + s2 + zhscript.Kws_.Bifangkuohao.String()

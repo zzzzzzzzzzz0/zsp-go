@@ -6,7 +6,6 @@ import (
 	"os"
 	"strings"
 	"strconv"
-	"flag"
 	"regexp"
 	. "github.com/zzzzzzzzzzz0/zhscript-go/zhscript"
 	"util4"
@@ -154,33 +153,28 @@ func (this *Zsp___) z2__() {
 func (this *Zsp___) Z__() {
 	var is_serve bool
 	{
-		z, err := New__(os.Args, content_convert__, this)
-		this.z = z
+		ss := New_strings__()
 		var root string
+		err := this.flag__(&root, &is_serve, ss)
 		if err == nil {
-			flag.StringVar(&root, "r", ".", "根")
-			flag.StringVar(&this.addr, "a", ":0", "侦听地址")
-			flag.StringVar(&this.index, "i", "index.zsp", "索引页")
-			flag.BoolVar(&is_serve, "s", true, "做为服务")
-			flag.CommandLine.Parse(z.Args.A__())
-
-			var args Args___
-			args.Add__(flag.Args()...)
-			this.main_qv, err = z.New_main_qv__(&args)
+			this.z, err = New__(ss.A, content_convert__, this)
 			if err == nil {
-				name := New_buf__()
-				name.WriteString("我的")
-				val := New_buf__()
-				val.WriteString(Kws_.Call.String() + "I__" +
-				Kws_.Dunhao.String() +
-				Kws_.Kaidanyinhao.String() +
-				Kws_.Args.String() +
-				Kws_.Bidanyinhao.String() +
-				Kws_.Juhao.String())
-				set2 := new(Var___)
-				set2.Is_lock = true
-				set2.Is_through = true
-				err = this.main_qv.Set_var__(name, val, set2, Kws_.Def)
+				this.main_qv, err = this.z.New_main_qv__(&this.z.Args)
+				if err == nil {
+					name := New_buf__()
+					name.WriteString("我的")
+					val := New_buf__()
+					val.WriteString(Kws_.Call.String() + "I__" +
+					Kws_.Dunhao.String() +
+					Kws_.Kaidanyinhao.String() +
+					Kws_.Args.String() +
+					Kws_.Bidanyinhao.String() +
+					Kws_.Juhao.String())
+					set2 := new(Var___)
+					set2.Is_lock = true
+					set2.Is_through = true
+					err = this.main_qv.Set_var__(name, val, set2, Kws_.Def)
+				}
 			}
 		}
 		if err != nil {
@@ -194,9 +188,9 @@ func (this *Zsp___) Z__() {
 		this.weizhuang = make(map[*weizhuang___]string)
 		this.clpars = clpars4.New__()
 
-		if z.Args.Src_type == Src_is_file_ {
+		if this.z.Args.Src_type == Src_is_file_ {
 			if !util4.Starts__(root, "/") {
-				root = util4.Get_dir__(z.Args.Src) + "/" + root
+				root = util4.Get_dir__(this.z.Args.Src) + "/" + root
 			}
 		}
 		if is_serve {
