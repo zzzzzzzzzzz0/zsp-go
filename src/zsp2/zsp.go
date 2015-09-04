@@ -159,7 +159,11 @@ func (this *Zsp___) Z__() {
 		if err == nil {
 			this.z, err = New__(ss.A, content_convert__, this)
 			if err == nil {
-				this.main_qv, err = this.z.New_main_qv__(&this.z.Args)
+				var args Args___
+				for _, v := range this.z.Args.A {
+					args.Add2__(v)
+				}
+				this.main_qv, err = this.z.New_main_qv__(&args)
 				if err == nil {
 					name := New_buf__()
 					name.WriteString("我的")

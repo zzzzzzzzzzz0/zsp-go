@@ -3,6 +3,7 @@ package util4
 import (
 	"github.com/zzzzzzzzzzz0/zhscript-go/zhscript"
 	"strings"
+	"strconv"
 )
 
 func Ends__(s0, s1 string) bool {
@@ -136,6 +137,37 @@ ret__ func(...interface{})) (no_use bool, goto1 *zhscript.Goto___) {
 			}
 		}
 		ret__(ret2)
+		return
+	case "数换":
+		if buzu__(2) {
+			return
+		}
+
+		s0, ok := s__(s[0]); if !ok {return}
+		i, err := strconv.ParseInt(s0, 10, 0)
+		if err != nil {
+			err__(err)
+			return
+		}
+
+		s1, ok := s__(s[1]); if !ok {return}
+		r := []rune(s1)
+		jinzhi := len(r)
+		if jinzhi < 2 {
+			err__(strconv.Itoa(jinzhi) + "进制")
+			return
+		}
+
+		var ret string
+		jinzhi1 := int64(jinzhi)
+		for i > 0 {
+			ret = string(r[i % jinzhi1]) + ret
+			i /= jinzhi1
+		}
+		if ret == "" {
+			ret = string(r[0])
+		}
+		ret__(ret)
 		return
 	}
 	no_use = true

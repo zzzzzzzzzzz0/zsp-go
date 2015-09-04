@@ -105,7 +105,10 @@ err__ func(...interface{}), ret__ func(...interface{})) (no_use bool, goto1 *zhs
 		var ret string
 		this.items.Find__(func(e *zhscript.Em___)bool {
 			item := e.Value.(*item___)
-			ret += item.tag + "\t" + item.help + "\n"
+			if item.tag != "" {
+				ret += item.tag + "\t"
+			}
+			ret += item.help + "\n"
 			return false
 		})
 		ret__(ret)
