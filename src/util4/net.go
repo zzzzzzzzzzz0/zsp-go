@@ -1,15 +1,15 @@
 package util4
 
 import (
-	"github.com/zzzzzzzzzzz0/zhscript-go/zhscript"
+	. "github.com/zzzzzzzzzzz0/zhscript-go/zhscript"
 	"net/url"
 	"net/http"
 	"io/ioutil"
 )
 
-func Net__(qv *zhscript.Qv___, k string, s []interface{}, s__ func(interface{}) (string, bool),
+func Net__(qv *Qv___, k string, s []interface{}, s__ func(interface{}) (string, bool),
 err__ func(...interface{}), buzu__ func(int) bool, buzhichi__ func(...interface{}),
-ret__ func(...interface{})) (no_use bool, goto1 *zhscript.Goto___) {
+ret__ func(...interface{})) (no_use bool, goto1 *Goto___) {
 	switch k {
 	case "urlencode":
 		for _, s1 := range s {
