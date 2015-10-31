@@ -55,6 +55,13 @@ func (this *Zsp___) weizhuang__(src string) string {
 	return src
 }
 
+func (this *Zsp___) known_path_add__(s string) {
+	for util4.Ends__(s, "/") {
+		s = s[0:len(s) - 1]
+	}
+	this.known_path.Add__(s)
+}
+
 func (this *Zsp___) can_stat__(src string) bool {
 	for _, s := range this.known_path.A {
 		if util4.Starts__(src, s) {
@@ -121,32 +128,40 @@ func (this *Zsp___) set_main_qv_var__(name2, val2 string) {
 }
 
 func (this *Zsp___) z2__() {
+	start_zs := os.Args[0] + ".zs"
+	if util4.Exist_file__(start_zs) {
+		this.zs__(start_zs)
+	}
 	if this.z.Args.Src_type == Src_is_file_ {
-		buf, goto1, err := util4.Zs__(this.z.Args.Src, true, "",
-			this.main_qv, nil, this.main_qv.Args.A__()...)
-		fmt.Print(buf.S__())
-		if err != nil {
-			util4.Errln__(err)
-			os.Exit(251)
-			return
-		}
-		if goto1 != nil {
-			switch goto1.Kw {
-			case Kws_.Quit, Kws_.Return:
-				if goto1.S == "" {
-					os.Exit(0)
-					return
-				}
-				i, err2 := strconv.Atoi(goto1.S)
-				if err2 == nil {
-					os.Exit(i)
-					return
-				}
+		this.zs__(this.z.Args.Src)
+	}
+}
+
+func (this *Zsp___) zs__(src string) {
+	buf, goto1, err := util4.Zs__(src, true, "",
+		this.main_qv, nil, this.main_qv.Args.A__()...)
+	fmt.Print(buf.S__())
+	if err != nil {
+		util4.Errln__(err)
+		os.Exit(251)
+		return
+	}
+	if goto1 != nil {
+		switch goto1.Kw {
+		case Kws_.Quit, Kws_.Return:
+			if goto1.S == "" {
+				os.Exit(0)
+				return
 			}
-			util4.Errgotoln__(goto1)
-			os.Exit(252)
-			return
+			i, err2 := strconv.Atoi(goto1.S)
+			if err2 == nil {
+				os.Exit(i)
+				return
+			}
 		}
+		util4.Errgotoln__(goto1)
+		os.Exit(252)
+		return
 	}
 }
 
@@ -198,9 +213,9 @@ func (this *Zsp___) Z__() {
 			}
 		}
 		if is_serve {
-			this.known_path.Add__(root)
+			this.known_path_add__(root)
 		} else {
-			this.known_path.Add__("/")
+			this.known_path_add__("/")
 		}
 		root = util4.Dir__(root)
 		Known_path_add__(root)
