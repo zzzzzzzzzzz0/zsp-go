@@ -25,7 +25,7 @@ tag string, s ...interface{}) {
 		if !no_use {
 			break
 		}
-		no_use = util4.Chan__(tag, s, s__, buzu__, ret__)
+		no_use, goto1 = util4.Chan__(tag, s, s__, err__, buzu__, ret__)
 		if !no_use {
 			break
 		}
@@ -49,7 +49,7 @@ tag string, s ...interface{}) {
 		if !no_use {
 			break
 		}
-		no_use, goto1 = util4.Time__(qv, tag, s, s__, err__, buzu__, buzhichi__, ret__)
+		no_use, goto1 = util4.Time__(qv, tag, s, s__, err__, buzu__, buzhichi__, ret__, c)
 		if !no_use {
 			break
 		}
@@ -109,22 +109,35 @@ tag string, s ...interface{}) {
 			}
 			break loop
 		case "转向":
+			if buzu__(1) {
+				break loop
+			}
 			if data, ok := qv.Not_my.(*data___); ok {
-				for _, s1 := range s {
-					s2, ok := s__(s1); if !ok {break loop}
-					http.ServeFile(*data.w, data.r, s2)
+				url, ok := s__(s[0]); if !ok {break loop}
+				typ := "u"
+				for i := 1; i < len(s); i++ {
+					typ, ok = s__(s[i]); if !ok {break loop}
+				}
+				switch(typ) {
+				case "f":
+					http.ServeFile(*data.w, data.r, url)
+				case "u":
+					http.Redirect(*data.w, data.r, url, http.StatusMovedPermanently)
+				default:
+					buzhichi__(typ)
 				}
 			}
 			break loop
 		case "加根路径":
 			for _, s1 := range s {
 				s2, ok := s__(s1); if !ok {break loop}
-				this.known_path.Add__(s2)
+				this.known_path_add__(s2)
 			}
 			break loop
 		case "伪装":
 			if len(s) % 2 != 0 {
 				buzu__(-1)
+				break loop
 			}
 			for i := 0; i < len(s); {
 				v, ok := s__(s[i]); if !ok {break loop}
@@ -155,22 +168,26 @@ tag string, s ...interface{}) {
 		buzhichi__("")
 		break
 	}
+	goto1__(goto1)
 	if c != nil {
 		c.Close_if__()
 	}
-	goto1__(goto1)
 }
 
 func (this *Zsp___) I__(qv *Qv___, s ...interface{}) (goto1 *Goto___, err1 *Errinfo___, ret1 []interface{}) {
 	if len(s) == 0 {
 		return
 	}
+	var c *util4.Chan___
 	err__ := func(s ...interface{}) {
 		err1 = New_errinfo__()
 		for _, i := range s {
 			err1.Add__(i)
 		}
 		err1.Add__(Errs_.Fail)
+		if c != nil {
+			c.Err__(err1)
+		}
 	}
 	s__ := func(i interface{}) (s2 string, ok bool) {
 		s2, ok = i.(string)
@@ -181,11 +198,10 @@ func (this *Zsp___) I__(qv *Qv___, s ...interface{}) (goto1 *Goto___, err1 *Erri
 		return
 	}
 	tag, ok := s__(s[0]); if !ok {return}
-	var c *util4.Chan___
 	ret__ := func(s ...interface{}) {
 		for _, i := range s {
 			if err, ok := i.(error); ok {
-				ret1 = append(ret1, err)
+				ret1 = append(ret1, err.Error())
 				continue
 			}
 			ret1 = append(ret1, i)
@@ -225,6 +241,9 @@ func (this *Zsp___) I__(qv *Qv___, s ...interface{}) (goto1 *Goto___, err1 *Erri
 	}
 	goto1__ := func(g *Goto___) {
 		goto1 = g
+		/*if c != nil {
+			c.Goto__(g)
+		}*/
 	}
 	s = s[1:]
 	if c != nil {
