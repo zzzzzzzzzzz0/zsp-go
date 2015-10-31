@@ -1,7 +1,7 @@
 package util4
 
 import (
-	"github.com/zzzzzzzzzzz0/zhscript-go/zhscript"
+	. "github.com/zzzzzzzzzzz0/zhscript-go/zhscript"
 	"strings"
 	"strconv"
 )
@@ -13,9 +13,13 @@ func Starts__(s0, s1 string) bool {
 	return strings.HasPrefix(s0, s1)
 }
 
-func Str__(qv *zhscript.Qv___, k string, s []interface{}, s__ func(interface{}) (string, bool),
+func Itoa__(i int) string {
+	return strconv.Itoa(i)
+}
+
+func Str__(qv *Qv___, k string, s []interface{}, s__ func(interface{}) (string, bool),
 err__ func(...interface{}), buzu__ func(int) bool, buzhichi__ func(...interface{}),
-ret__ func(...interface{})) (no_use bool, goto1 *zhscript.Goto___) {
+ret__ func(...interface{})) (no_use bool, goto1 *Goto___) {
 	switch k {
 	case "尾匹配":
 		if buzu__(2) {
@@ -35,6 +39,54 @@ ret__ func(...interface{})) (no_use bool, goto1 *zhscript.Goto___) {
 		s1, ok := s__(s[1]); if !ok {return}
 		if Starts__(s0, s1) {
 			ret__("1")
+		}
+		return
+	case "子串":
+		if buzu__(2) {
+			return
+		}
+		s0, ok := s__(s[0]); if !ok {return}
+		s1, ok := s__(s[1]); if !ok {return}
+		start, err := strconv.Atoi(s1)
+		if err != nil {
+			err__(err)
+			return
+		}
+		r := []rune(s0)
+		l := len(r)
+		end := l
+		if len(s) > 2 {
+			s1, ok = s__(s[2]); if !ok {return}
+			end, err = strconv.Atoi(s1)
+			if err != nil {
+				err__(err)
+				return
+			}
+			if end < 0 {
+				end += l
+			}
+		}
+		if start < 0 {
+			start += l
+			if start < 0 {
+				start = 0
+			}
+		}
+		var ret string
+		for i := start; i < l && i < end; i++ {
+			ret += string(r[i])
+		}
+		ret__(ret)
+		return
+	case "大写", "小写":
+		if buzu__(1) {
+			return
+		}
+		s0, ok := s__(s[0]); if !ok {return}
+		if k == "大写" {
+			ret__(strings.ToUpper(s0))
+		} else {
+			ret__(strings.ToLower(s0))
 		}
 		return
 	case "省略":
@@ -57,7 +109,7 @@ ret__ func(...interface{})) (no_use bool, goto1 *zhscript.Goto___) {
 		index := []rune("index")
 		rr_add := func() {
 			if r1 != nil {
-				if _, ok := zhscript.Startswith__(r1, index, 0); ok {
+				if _, ok := Startswith__(r1, index, 0); ok {
 				} else {
 					rr = append(rr, r1)
 				}
@@ -154,7 +206,7 @@ ret__ func(...interface{})) (no_use bool, goto1 *zhscript.Goto___) {
 		r := []rune(s1)
 		jinzhi := len(r)
 		if jinzhi < 2 {
-			err__(strconv.Itoa(jinzhi) + "进制")
+			err__(Itoa__(jinzhi) + "进制")
 			return
 		}
 
