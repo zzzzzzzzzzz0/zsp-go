@@ -29,6 +29,28 @@ func Exist_file__(path string) bool {
 	return err == nil
 }
 
+func Exist_file2__(path string) (ok, is_dir, is_symlink bool) {
+	fi, err := os.Lstat(path)
+	ok = err == nil
+	if ok {
+		is_dir = fi.IsDir()
+		is_symlink = (fi.Mode() & os.ModeSymlink) != 0
+		if is_symlink {
+			path2, err2 := os.Readlink(path)
+			if err2 == nil {
+				if !Starts__(path2, "/") {
+					path2 = path + "/" + path2
+				}
+				ok2, _, is_dir2 := Exist_file2__(path2)
+				if ok2 {
+					is_dir = is_dir2
+				}
+			}
+		}
+	}
+	return
+}
+
 func File_main_name__(s string) (s1 string) {
 	s1 = filepath.Base(s)
 	i1 := strings.LastIndex(s1, ".")
@@ -51,7 +73,7 @@ ret__ func(...interface{}), c *Chan___) (no_use bool, goto1 *Goto___) {
 			fi os.FileInfo
 			err error
 		)
-		stat := func() bool {
+		stat__ := func() bool {
 			if fi == nil {
 				fi, err = os.Lstat(filename)
 			}
@@ -60,11 +82,11 @@ ret__ func(...interface{}), c *Chan___) (no_use bool, goto1 *Goto___) {
 		for i := 1; i < len(s); i++ {
 			switch s[i] {
 			case "在":
-				if stat() {
+				if stat__() {
 					ret__("1")
 				}
 			case "类型":
-				if stat() {
+				if stat__() {
 					if (fi.Mode() & os.ModeSymlink) != 0 {
 						ret__("l")
 					} else if fi.IsDir() {
@@ -98,15 +120,15 @@ ret__ func(...interface{}), c *Chan___) (no_use bool, goto1 *Goto___) {
 			case "净":
 				ret__(filepath.Clean(filename))
 			case "大小":
-				if stat() {
+				if stat__() {
 					ret__(strconv.FormatInt(fi.Size(), 10))
 				}
 			case "权限":
-				if stat() {
+				if stat__() {
 					ret__(fi.Mode().String())
 				}
 			case "修改时间":
-				if stat() {
+				if stat__() {
 					if i == len(s) - 1 {
 						ret__(fi.ModTime().String())
 					} else {
@@ -222,12 +244,13 @@ ret__ func(...interface{}), c *Chan___) (no_use bool, goto1 *Goto___) {
 				s1, ok := s__(s[len1]); if !ok {return}
 				
 				flags := os.O_CREATE | os.O_WRONLY
+				i_old := i
 				for i++; i < len1; i++ {
 					switch s[i] {
 					case "追加":
 						flags |= os.O_APPEND
 					default:
-						buzhichi__(filename, s[i])
+						buzhichi__(filename, s[i_old], s[i])
 						return
 					}
 				}
