@@ -1,0 +1,3 @@
+#!/bin/sh
+GOPATH=$PWD:$GOPATH
+/usr/bin/go install -v -gcflags "-N -l" ./...
