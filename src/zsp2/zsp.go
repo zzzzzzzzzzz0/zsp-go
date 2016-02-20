@@ -12,11 +12,13 @@ import (
 	"clpars4"
 )
 
+const _zsp_, _zs_ = ".zsp", ".zs"
+
 var s_begin_ = Kws_.Juhao.String() + Kws_.Begin_yuanyang.String()
 var s_end_ = Kws_.End_yuanyang.String() + Kws_.Juhao.String()
 var r_ = strings.NewReplacer("<%", s_end_, "%>", s_begin_)
 func content_convert__(b []byte, src string) []byte {
-	if !util4.Ends__(src, ".zsp") {
+	if !util4.Ends__(src, _zsp_) {
 		return b
 	}
 	s := string(b)
@@ -28,6 +30,7 @@ func content_convert__(b []byte, src string) []byte {
 type Zsp___ struct {
 	main_qv *Qv___
 	z *Zhscript___
+	pgrname, finalpgrname string
 	addr, index string
 	known_path *Strings___
 	weizhuang map[*weizhuang___]string
@@ -59,7 +62,9 @@ func (this *Zsp___) known_path_add__(s string) {
 	for util4.Ends__(s, "/") {
 		s = s[0:len(s) - 1]
 	}
-	this.known_path.Add__(s)
+	if !this.known_path.Find__(func(s2 string)bool {return s == s2}) {
+		this.known_path.Add__(s)
+	}
 }
 
 func (this *Zsp___) can_stat__(src string) bool {
@@ -71,16 +76,16 @@ func (this *Zsp___) can_stat__(src string) bool {
 	return false
 }
 
-func (this *Zsp___) get_path__(src string) (src2 string, ok bool) {
-	if util4.Exist_file__(src) && this.can_stat__(src) {
+func (this *Zsp___) get_path__(src string) (src2 string, ok, is_dir, is_symlink bool) {
+	ok, is_dir, is_symlink = util4.Exist_file2__(src)
+	if ok && this.can_stat__(src) {
 		src2 = src
-		ok = true
 		return
 	}
 	for _, s := range this.known_path.A {
 		src2 = s + "/" + src
-		if util4.Exist_file__(src2) {
-			ok = true
+		ok, is_dir, is_symlink = util4.Exist_file2__(src2)
+		if ok {
 			return
 		}
 	}
@@ -94,23 +99,25 @@ func (this Zsp___) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		src += this.index
 	}
 	src = this.weizhuang__(src)
-	if src2, ok := this.get_path__(src); ok {
-		if util4.Ends__(src, ".zsp") {
+	if src2, ok, is_dir, is_symlink := this.get_path__(src); ok {
+		if util4.Ends__(src, _zsp_) {
 			buf, goto1, err := util4.Zs__(src2, true, "", this.main_qv, &data___{r:r, w:&w})
 			fmt.Fprint(w, buf.S__())
-			if err != nil {
-				fmt.Fprint(w, err)
-				util4.Errln__(err)
-			}
 			if goto1 != nil {
 				switch goto1.Kw {
 				case Kws_.Quit, Kws_.Return:
 				default:
 					err = New_errinfo__(goto1.S, goto1.Kw, Errs_.Keyword, Kws_.For)
-					fmt.Fprint(w, err)
-					util4.Errln__(err)
 				}
 			}
+			if err != nil {
+				fmt.Fprint(w, err)
+				util4.Errln__(err)
+			}
+			return
+		}
+		if is_symlink && is_dir {
+			http.Redirect(w, r, src2 + "/", http.StatusMovedPermanently)
 			return
 		}
 		http.ServeFile(w, r, src2)
@@ -125,16 +132,6 @@ func (this *Zsp___) set_main_qv_var__(name2, val2 string) {
 	val := New_buf__()
 	val.WriteString(val2)
 	this.main_qv.Set_var__(name, val, nil, Kws_.Set)
-}
-
-func (this *Zsp___) z2__() {
-	start_zs := os.Args[0] + ".zs"
-	if util4.Exist_file__(start_zs) {
-		this.zs__(start_zs)
-	}
-	if this.z.Args.Src_type == Src_is_file_ {
-		this.zs__(this.z.Args.Src)
-	}
 }
 
 func (this *Zsp___) zs__(src string) {
@@ -209,8 +206,16 @@ func (this *Zsp___) Z__() {
 
 		if this.z.Args.Src_type == Src_is_file_ {
 			if !util4.Starts__(root, "/") {
-				root = util4.Get_dir__(this.z.Args.Src) + "/" + root
+				dir := util4.Get_dir__(this.z.Args.Src)
+				if root == "." {
+					root = dir
+				} else {
+					root = dir + "/" + root
+				}
 			}
+		}
+		if this.z.Args.Src_type == Src_is_file_ && !util4.Ends__(this.z.Args.Src, _zsp_) {
+			is_serve = false
 		}
 		if is_serve {
 			this.known_path_add__(root)
@@ -220,14 +225,15 @@ func (this *Zsp___) Z__() {
 		root = util4.Dir__(root)
 		Known_path_add__(root)
 		this.set_main_qv_var__("根", root)
-		this.set_main_qv_var__("侦听地址", this.addr)
 
-		this.z2__()
+		if this.z.Args.Src_type == Src_is_file_ {
+			this.zs__(this.z.Args.Src)
+		}
 	}
 	if is_serve {
 		//err2 := http.ListenAndServe(this.addr, this)
 		var err2 error
-		this.serve, err2 = New_serve__(this.addr, this)
+		this.serve, err2 = New_serve__(this)
 		if err2 != nil {
 			util4.Errln__(err2)
 			os.Exit(255)
