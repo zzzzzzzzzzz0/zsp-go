@@ -20,8 +20,8 @@ qv *Qv___, c *Chan___) (goto1 *Goto___) {
 		return
 	}
 	fi, err := os.Stat(dir)
-	if os.IsNotExist(err) {
-		ret__("", dir + " 不存在")
+	if err != nil {
+		ret__("", err)
 		return
 	}
 	if !fi.IsDir() {
@@ -107,6 +107,9 @@ qv *Qv___, c *Chan___) (goto1 *Goto___) {
 			ret += s2
 		}
 		kw, goto1 = Goto1__(goto1)
+		if kw == Kws_.Break && fi2.IsDir() {
+			return filepath.SkipDir
+		}
 		if goto1 != nil || kw == Kws_.Break {
 			if c != nil {
 				c.Goto__(goto1)
