@@ -2,9 +2,11 @@
 
 测试方法：
 
-./bin/zsp -a :4000 -i ""
+cd test-web
 
-在浏览器里访问 127.0.0.1:4000，点击其中 [helloworld.zsp](https://github.com/zzzzzzzzzzz0/zsp-go/blob/master/helloworld.zsp) 的话，将会显示：
+../bin/zsp
+
+在浏览器里访问提示的网址，点击其中 [helloworld.zsp](https://github.com/zzzzzzzzzzz0/zsp-go/blob/master/helloworld.zsp) 的话，将会显示：
 
 hello, woorrrllllddddd.
 
