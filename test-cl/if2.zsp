@@ -1,0 +1,17 @@
+#!../bin/zsp -zhscript-o-ansi -zhscript-o-lc2 -zhscript-o-lc -zhscript-o-tree -s=0 --。
+<%
+赋予名以1.png。
+如果我的尾匹配、‘名’、.png等于0
+或者我的尾匹配、‘名’、.jpg
+或者
+先
+1小于1.1
+并且
+先
+2大于我的尾匹配、‘名’、.jpg
+并且
+不3
+了
+了
+那么哈否则啊。
+%>
