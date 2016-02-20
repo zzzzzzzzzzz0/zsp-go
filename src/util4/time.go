@@ -107,7 +107,7 @@ func timer1__(d time.Duration, code string, one bool, qv *Qv___, c *Chan___) {
 	}
 }
 func Time__(qv *Qv___, k string, s []interface{}, s__ func(interface{}) (string, bool),
-err__ func(...interface{}), buzu__ func(int) bool, buzhichi__ func(...interface{}),
+err__ func(...interface{}), buzu__ func(int) bool, buzhichi__ func(...interface{}), can_stat__ func(string) bool,
 ret__ func(...interface{}), c *Chan___) (no_use bool, goto1 *Goto___) {
 	switch k {
 	case "时间":
