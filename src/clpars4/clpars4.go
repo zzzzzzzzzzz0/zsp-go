@@ -12,7 +12,7 @@ type C___ struct {
 }
 
 type item___ struct {
-	tag, help, code string
+	tag, help, code, typ string
 	re *regexp.Regexp
 }
 
@@ -21,9 +21,13 @@ err__ func(...interface{}), ret__ func(...interface{})) (no_use bool, goto1 *zhs
 	switch k {
 	case "命令行加回调":
 		for i := 0; i < len(s); i++ {
-			si, ok := s__(s[i]); if !ok {return}
-			item := &item___{tag:si}
-			tag := item.tag
+			tag, ok := s__(s[i]); if !ok {return}
+			item := &item___{}
+			if util4.Ends__(tag, "...") {
+				tag = tag[0:len(tag) - 3]
+				item.typ = "..."
+			}
+			item.tag = tag
 			switch tag {
 			case "":
 				tag = "(.*)"
@@ -62,23 +66,36 @@ err__ func(...interface{}), ret__ func(...interface{})) (no_use bool, goto1 *zhs
 			err1 *zhscript.Errinfo___
 			kw *zhscript.Keyword___
 			i int
+			ss1 []string
+			item1 *item___
 		)
-		for _, s1 := range s {
+		zs__ := func(item *item___, ss []string) {
+			_, goto1, err1 = util4.Zs3__(item.code, item.tag, qv, ss...)
+			if err1 != nil {
+				return
+			}
+			kw, goto1 = util4.Goto1__(goto1)
+		}
+		for i1, s1 := range s {
 			s2, ok := s__(s1); if !ok {return}
 			if(this.items.Find__(func(e *zhscript.Em___)bool {
 				item := e.Value.(*item___)
 				var fa bool
 				for _, ss := range item.re.FindAllStringSubmatch(s2, -1) {
 					fa = true
+					if item.typ == "..." {
+						ss1 = ss[1:]
+						item1 = item
+						return true
+					}
 					if item.tag == "" {
 						i++
 						ss = append(ss, strconv.Itoa(i))
 					}
-					_, goto1, err1 = util4.Zs3__(item.code, item.tag, qv, ss[1:]...)
+					zs__(item, ss[1:])
 					if err1 != nil {
 						return true
 					}
-					kw, goto1 = util4.Goto1__(goto1)
 					if kw == zhscript.Kws_.Continue {
 						continue
 					}
@@ -88,11 +105,25 @@ err__ func(...interface{}), ret__ func(...interface{})) (no_use bool, goto1 *zhs
 				}
 				return fa
 			})) {
+				if item1 != nil {
+					for {
+						i1++
+						if i1 >= len(s) {
+							break
+						}
+						s2, ok = s__(s[i1]); if !ok {return}
+						ss1 = append(ss1, s2)
+					}
+					zs__(item1, ss1)
+				}
 				if err1 != nil {
 					err__(err1)
 					break
 				}
 				if goto1 != nil || kw == zhscript.Kws_.Break {
+					break
+				}
+				if item1 != nil {
 					break
 				}
 				continue
