@@ -2,28 +2,49 @@ package zsp2
 
 import (
 	"net"
-	"net/http"
+	. "net/http"
 	"os"
+	"strings"
 )
 
 type Serve___ struct {
-	*http.Server
-	port string
+	*Server
 }
 
 func (this *Serve___) Close__() {
 	os.Exit(0)
 }
 
-func New_serve__(addr string, handler http.Handler) (srv *Serve___, err error) {
-	srv = &Serve___{Server:&http.Server{Addr: addr, Handler: handler}}
+func New_serve__(thiz *Zsp___) (srv *Serve___, err error) {
+	srv = &Serve___{Server:&Server{Addr: thiz.addr, Handler: thiz}}
 
 	//err = srv.ListenAndServe()
+
 	var l net.Listener
-	l, srv.port, err = Listen__(addr, true)
+	l, _, err = Listen__(thiz.addr, true)
 	if err != nil {
 		return
 	}
+
+	ip1 := "127.0.0.1"
+	addrs, err := net.InterfaceAddrs()
+	if err == nil {
+		for _, a := range addrs {
+			if ipn, ok := a.(*net.IPNet); ok {
+				ip := ipn.IP
+				if(!ip.IsLoopback()) {
+					ip1 = ip.String()
+					break
+				}
+			}
+		}
+	}
+	addr := strings.Replace(l.Addr().String(), "[::]", ip1, -1)
+	if addr[0] == ':' {
+		addr = ip1 + addr
+	}
+	thiz.addr = addr
+	println("addr " + thiz.addr)
 	err = srv.Serve(l)
 	return
 }
