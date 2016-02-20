@@ -42,6 +42,9 @@ func (this *Chan___) x__() {
 }
 
 func (this *Chan___) Goto__(g *Goto___) {
+	if g == nil {
+		return
+	}
 	if !this.is_close {
 		this.goto1 <- g
 	}
@@ -81,6 +84,7 @@ ret__ func(...interface{})) (no_use bool, goto1 *Goto___) {
 		case g, ok := <- c.goto1:
 			if ok {
 				goto1 = g
+				c.has_x = true
 			}
 		case err, ok := <- c.err:
 			if ok {
@@ -88,6 +92,7 @@ ret__ func(...interface{})) (no_use bool, goto1 *Goto___) {
 			}
 		case <- c.x:
 			c.has_x = true
+		default:
 		}
 		return
 	case "信道关闭":
