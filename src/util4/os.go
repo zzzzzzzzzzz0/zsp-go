@@ -41,9 +41,57 @@ func cmd__(s []interface{}, i1 int, s__ func(interface{}) (string, bool)) *exec.
 	return exec.Command(name, args...)
 }
 
+func Finalpgrname__(ret string) string {
+	wd__ := func(ret string) string {
+		if !Starts__(ret, "/") {
+			dir, err := os.Getwd()
+			if err == nil {
+				ret = dir + "/" + ret
+			}
+		}
+		return ret
+	}
+	var ln string
+	ln__ := func() bool {
+		var err error
+		ln, err = os.Readlink(ret)
+		return err == nil
+	}
+	for {
+		ret = wd__(ret)
+		for {
+			dir := filepath.Dir(ret)
+			dirln, err := os.Readlink(dir)
+			if err != nil {
+				break
+			}
+			is_ln := ln__()
+			if !Starts__(dirln, "/") && !is_ln {
+				if Starts__(dirln, "..") {
+					dirln = wd__(dirln)
+				} else {
+					dirln = dir + "/" + dirln
+				}
+			}
+			ret = dirln + "/" + filepath.Base(ret)
+			if is_ln {
+				ret = wd__(ret)
+			}
+		}
+		if !ln__() {
+			break
+		}
+		if !Starts__(ln, "/") {
+			ln = filepath.Dir(ret) + "/" + ln
+		}
+		ret = ln
+	}
+	return filepath.Clean(ret)
+}
+
 func Os__(qv *Qv___, k string, s []interface{}, s__ func(interface{}) (string, bool),
-err__ func(...interface{}), buzu__ func(int) bool, buzhichi__ func(...interface{}),
-ret__ func(...interface{})) (no_use bool, goto1 *Goto___) {
+err__ func(...interface{}), buzu__ func(int) bool, buzhichi__ func(...interface{}), can_stat__ func(string) bool,
+ret__ func(...interface{}), c *Chan___) (no_use bool, goto1 *Goto___) {
 	switch k {
 	case "环境变量":
 		if buzu__(1) {
@@ -69,42 +117,6 @@ ret__ func(...interface{})) (no_use bool, goto1 *Goto___) {
 			return
 		}
 		ret__(dir)
-		return
-	case "程序名":
-		ret := os.Args[0]
-		for _, s1 := range s {
-			switch s1 {
-			case "最终":
-				for {
-					if Starts__(ret, ".") {
-						dir, err := os.Getwd()
-						if err == nil {
-							ret = dir + ret[1:]
-						}
-					}
-					dir := filepath.Dir(ret)
-					s2, err := os.Readlink(dir)
-					if err == nil {
-						if !Starts__(s2, "/") {
-							s2 = dir + "/" + s2
-						}
-						ret = s2 + ret[len(dir):]
-					}
-					s2, err = os.Readlink(ret)
-					if err != nil {
-						break
-					}
-					if !Starts__(s2, "/") {
-						s2 = dir + "/" + s2
-					}
-					ret = s2
-				}
-			default:
-				buzhichi__(s1)
-				return
-			}
-		}
-		ret__(ret)
 		return
 	case "重定向输出":
 		if buzu__(1) {
