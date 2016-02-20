@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func array_oper(fn1 func(a *Strings___, s1 string), fn2 func(i interface{}) int,
+func array_oper(f1__ func(a *Strings___, s1 string), f2__ func(s2 string) int,
 s []interface{}, s__ func(interface{}) (string, bool),
 err__ func(...interface{}), buzu__ func(int) bool, buzhichi__ func(...interface{})) (ok2 bool) {
 	if buzu__(3) {
@@ -20,13 +20,14 @@ err__ func(...interface{}), buzu__ func(int) bool, buzhichi__ func(...interface{
 	}
 	len1 := len(s) - 1
 	s1, ok := s__(s[len1]); if !ok {return}
-	fn1(a, s1)
+	f1__(a, s1)
 	for i := 2; i < len1; i++ {
-		switch(fn2(s[i])) {
+		s2, ok := s__(s[i]); if !ok {return}
+		switch(f2__(s2)) {
 		case -1:
 			return
 		case 1:
-			buzhichi__(s[0], s[i])
+			buzhichi__(s[0], s2)
 			return
 		}
 	}
@@ -35,8 +36,8 @@ err__ func(...interface{}), buzu__ func(int) bool, buzhichi__ func(...interface{
 }
 
 func Util__(qv *Qv___, k string, s []interface{}, s__ func(interface{}) (string, bool),
-err__ func(...interface{}), buzu__ func(int) bool, buzhichi__ func(...interface{}),
-ret__ func(...interface{})) (no_use bool, goto1 *Goto___) {
+err__ func(...interface{}), buzu__ func(int) bool, buzhichi__ func(...interface{}), can_stat__ func(string) bool,
+ret__ func(...interface{}), c *Chan___) (no_use bool, goto1 *Goto___) {
 	switch k {
 	case "随机数":
 		//rand.Seed(time.Now().UnixNano())
@@ -110,27 +111,29 @@ ret__ func(...interface{})) (no_use bool, goto1 *Goto___) {
 		switch(s[0]) {
 		case "新建":
 			ret__(New_strings__())
-		case "增至":
+		case "增至", "不重复增至":
 			var (
 				a *Strings___
 				s1 string
+				f2__ func(string) int
 			)
-			if(!array_oper(
-			func(a2 *Strings___, s2 string) {a = a2; s1 = s2},
-			func(i interface{}) int {
-				switch(i) {
-				case "不重复":
-					if a.Find__(func (s2 string) bool {return s2 == s1}) {
-						return -1
-					}
-				default:
-					return 1
+			if s[0] == "增至" {
+				f2__ = func(s3 string) int {
+					a.Add__(s3)
+					return 0
 				}
-				return 0
-			}, s, s__, err__, buzu__, buzhichi__)) {
+			} else {
+				f2__ = func(s3 string) int {
+					if !a.Find__(func (s2 string) bool {return s2 == s3}) {
+						a.Add__(s3)
+					}
+					return 0
+				}
+			}
+			if(!array_oper(func(a2 *Strings___, s2 string) {a = a2; s1 = s2}, f2__, s, s__, err__, buzu__, buzhichi__)) {
 				return
 			}
-			a.Add__(s1)
+			f2__(s1)
 		case "遍历":
 			var (
 				a *Strings___
@@ -139,8 +142,8 @@ ret__ func(...interface{})) (no_use bool, goto1 *Goto___) {
 			)
 			if(!array_oper(
 			func(a2 *Strings___, s2 string) {a = a2; code = s2},
-			func(i interface{}) int {
-				switch(i) {
+			func(s3 string) int {
+				switch(s3) {
 				case "逆序":
 					desc = true
 				default:
@@ -153,6 +156,7 @@ ret__ func(...interface{})) (no_use bool, goto1 *Goto___) {
 			var (
 				err1 *Errinfo___
 				buf *Buf___
+				kw *Keyword___
 				ret string
 				i int
 			)
@@ -168,14 +172,21 @@ ret__ func(...interface{})) (no_use bool, goto1 *Goto___) {
 					err__(err1)
 					break
 				}
-				if goto1 != nil {
-					break
-				}
-				ret += buf.S__()
 				if desc {
 					i--
 				} else {
 					i++
+				}
+				ret += buf.S__()
+				kw, goto1 = Goto1__(goto1)
+				if kw == Kws_.Continue {
+					continue
+				}
+				if kw == Kws_.Break {
+					break
+				}
+				if goto1 != nil {
+					break
 				}
 			}
 			ret__(ret)
@@ -186,13 +197,8 @@ ret__ func(...interface{})) (no_use bool, goto1 *Goto___) {
 			)
 			if(!array_oper(
 			func(a2 *Strings___, s2 string) {a = a2; s1 = s2},
-			func(i interface{}) int {
-				switch(i) {
-				default:
-					return 1
-				}
-				return 0
-			}, s, s__, err__, buzu__, buzhichi__)) {
+			func(string) int {return 1},
+			s, s__, err__, buzu__, buzhichi__)) {
 				return
 			}
 			for i, s2 := range a.A {
@@ -214,14 +220,14 @@ ret__ func(...interface{})) (no_use bool, goto1 *Goto___) {
 			err1 *Errinfo___
 			buf *Buf___
 		)
-		fa := func (a *Strings___) (s string) {
+		fa__ := func (a *Strings___) (s string) {
 			a.Find__(func (s2 string) bool {
 				s += Kws_.Kaifangkuohao.String() + s2 + Kws_.Bifangkuohao.String()
 				return false
 			})
 			return
 		}
-		fb := func (b bool) string {
+		fb__ := func (b bool) string {
 			if(b) {
 				return "1"
 			} else {
@@ -237,14 +243,21 @@ ret__ func(...interface{})) (no_use bool, goto1 *Goto___) {
 			if qv2 == nil {
 				break
 			}
-			if qv2.Vars.Ls.Find__(func(e *Em___) bool {
-				v := Var__(e)
-				buf, goto1, err1 = Zs2__(code, qv,
-					v.Name, v.Val.S,
-					fa(v.Annota_val),
-					fb(v.Is_lock),
-					v.Kw.String(),
-					Itoa__(i))
+			if qv2.Vars.Find__(func(v *Var___) bool {
+				kw := v.Kw.String()
+				tm := time.Unix(v.Timestamp, 0)
+				timestamp := tm.Format("050415-02012006")
+				annota_val := fa__(v.Annota_val)
+				is_lock := fb__(v.Is_lock)
+				i2 := Itoa__(i)
+				switch v.Kw {
+				case Kws_.Def:
+					buf, goto1, err1 = Zs2__(code, qv,
+						timestamp, kw, is_lock, i2, v.Name, v.Val.S, annota_val,
+						fb__(v.Is_no_arg), fb__(v.Is_through), Itoa__(v.Qian_arg))
+				default:
+					buf, goto1, err1 = Zs2__(code, qv, timestamp, kw, is_lock, i2, v.Name, v.Val.S, annota_val)
+				}
 				if err1 != nil {
 					err__(err1)
 					return true
