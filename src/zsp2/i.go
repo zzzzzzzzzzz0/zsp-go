@@ -10,6 +10,16 @@ import (
 	"util4"
 )
 
+type I___ func (qv *Qv___, k string, s []interface{}, s__ func(interface{}) (string, bool),
+err__ func(...interface{}), buzu__ func(int) bool, buzhichi__ func(...interface{}), can_stat__ func(string) bool,
+ret__ func(...interface{}), c *util4.Chan___) (no_use bool, goto1 *Goto___) 
+
+var i_ []I___ = []I___ {util4.Util__, util4.Str__, util4.Regexp__, util4.File__, util4.Os__,
+	util4.Net__, util4.Time__}
+func Add_i__(i I___) {
+	i_ = append(i_, i)
+}
+
 func (this *Zsp___) i__(qv *Qv___,
 s__ func(interface{}) (string, bool),
 err__ func(...interface{}), buzu__ func(int) bool, buzhichi__ func(...interface{}),
@@ -21,35 +31,7 @@ tag string, s ...interface{}) {
 	)
 	loop:
 	for {
-		no_use, goto1 = util4.Util__(qv, tag, s, s__, err__, buzu__, buzhichi__, ret__)
-		if !no_use {
-			break
-		}
 		no_use, goto1 = util4.Chan__(tag, s, s__, err__, buzu__, ret__)
-		if !no_use {
-			break
-		}
-		no_use, goto1 = util4.Str__(qv, tag, s, s__, err__, buzu__, buzhichi__, ret__)
-		if !no_use {
-			break
-		}
-		no_use, goto1 = util4.File__(qv, tag, s, s__, err__, buzu__, buzhichi__, this.can_stat__, ret__, c)
-		if !no_use {
-			break
-		}
-		no_use, goto1 = util4.Regexp__(qv, tag, s, s__, err__, buzu__, buzhichi__, ret__)
-		if !no_use {
-			break
-		}
-		no_use, goto1 = util4.Os__(qv, tag, s, s__, err__, buzu__, buzhichi__, ret__)
-		if !no_use {
-			break
-		}
-		no_use, goto1 = util4.Net__(qv, tag, s, s__, err__, buzu__, buzhichi__, ret__)
-		if !no_use {
-			break
-		}
-		no_use, goto1 = util4.Time__(qv, tag, s, s__, err__, buzu__, buzhichi__, ret__, c)
 		if !no_use {
 			break
 		}
@@ -57,7 +39,13 @@ tag string, s ...interface{}) {
 		if !no_use {
 			break
 		}
-	
+		for _, i := range i_ {
+			no_use, goto1 = i(qv, tag, s, s__, err__, buzu__, buzhichi__, this.can_stat__, ret__, c)
+			if !no_use {
+				break loop
+			}
+		}
+
 		switch tag {
 		case "参":
 			if data, ok := qv.Not_my.(*data___); ok {
@@ -97,17 +85,6 @@ tag string, s ...interface{}) {
 				}
 			}
 			break loop
-		case "端口号":
-			if this.serve != nil {
-				ret__(this.serve.port)
-			}
-			break loop
-		case "空闲端口号":
-			_, port, err := Listen__(":0", false)
-			if err == nil {
-				ret__(port)
-			}
-			break loop
 		case "转向":
 			if buzu__(1) {
 				break loop
@@ -127,6 +104,19 @@ tag string, s ...interface{}) {
 					buzhichi__(typ)
 				}
 			}
+			break loop
+		case "程序名":
+			ret := this.pgrname
+			for _, s1 := range s {
+				switch s1 {
+				case "最终":
+					ret = this.finalpgrname
+				default:
+					buzhichi__(s1)
+					break loop
+				}
+			}
+			ret__(ret)
 			break loop
 		case "加根路径":
 			for _, s1 := range s {
@@ -160,6 +150,15 @@ tag string, s ...interface{}) {
 					this.weizhuang[&weizhuang___{re}] = v
 				}
 			}
+			break loop
+		case "空闲端口号":
+			_, port, err := Listen__(":0", false)
+			if err == nil {
+				ret__(port)
+			}
+			break loop
+		case "侦听地址":
+			ret__(this.addr)
 			break loop
 		case "服务关闭":
 			this.serve.Close__()
@@ -241,9 +240,9 @@ func (this *Zsp___) I__(qv *Qv___, s ...interface{}) (goto1 *Goto___, err1 *Erri
 	}
 	goto1__ := func(g *Goto___) {
 		goto1 = g
-		/*if c != nil {
+		if c != nil {
 			c.Goto__(g)
-		}*/
+		}
 	}
 	s = s[1:]
 	if c != nil {
