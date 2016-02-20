@@ -18,8 +18,8 @@ func Itoa__(i int) string {
 }
 
 func Str__(qv *Qv___, k string, s []interface{}, s__ func(interface{}) (string, bool),
-err__ func(...interface{}), buzu__ func(int) bool, buzhichi__ func(...interface{}),
-ret__ func(...interface{})) (no_use bool, goto1 *Goto___) {
+err__ func(...interface{}), buzu__ func(int) bool, buzhichi__ func(...interface{}), can_stat__ func(string) bool,
+ret__ func(...interface{}), c *Chan___) (no_use bool, goto1 *Goto___) {
 	switch k {
 	case "尾匹配":
 		if buzu__(2) {
@@ -107,7 +107,7 @@ ret__ func(...interface{})) (no_use bool, goto1 *Goto___) {
 			s1 = filename
 		}
 		index := []rune("index")
-		rr_add := func() {
+		rr_add__ := func() {
 			if r1 != nil {
 				if _, ok := Startswith__(r1, index, 0); ok {
 				} else {
@@ -119,12 +119,12 @@ ret__ func(...interface{})) (no_use bool, goto1 *Goto___) {
 		for _, r := range s1 {
 			switch r {
 			case '/':
-				rr_add()
+				rr_add__()
 				continue
 			}
 			r1 = append(r1, r)
 		}
-		rr_add()
+		rr_add__()
 		for1:
 		for i, r3 := range rr {
 			if len(r3) == 0 {
