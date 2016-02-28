@@ -21,7 +21,7 @@ func (this *Zsp___) flag2__(a []string, ss *Strings___) *Errinfo___ {
 		if s == Shebang_flag_ {
 			continue
 		}
-		if s == "-h" || s == "--help" {
+		if s == "-h" || util4.Starts__(s, "--help") {
 			ss.Add__(s)
 			continue
 		}
