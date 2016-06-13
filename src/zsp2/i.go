@@ -105,6 +105,20 @@ tag string, s ...interface{}) {
 				}
 			}
 			break loop
+		case "应答头":
+			if buzu__(2) {
+				break loop
+			}
+			if data, ok := qv.Not_my.(*data___); ok {
+				for i := 0; i < len(s); {
+					key, ok := s__(s[i]); if !ok {break loop}
+					i++
+					val, ok := s__(s[i]); if !ok {break loop}
+					i++
+					(*data.w).Header().Add(key, val)
+				}
+			}
+			break loop
 		case "程序名":
 			ret := this.pgrname
 			for _, s1 := range s {
