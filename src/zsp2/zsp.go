@@ -3,7 +3,6 @@ package zsp2
 import (
 	"fmt"
 	"net/http"
-	"os"
 	"strings"
 	"strconv"
 	"regexp"
@@ -140,24 +139,24 @@ func (this *Zsp___) zs__(src string) {
 	fmt.Print(buf.S__())
 	if err != nil {
 		util4.Errln__(err)
-		os.Exit(251)
+		util4.Exit__(251)
 		return
 	}
 	if goto1 != nil {
 		switch goto1.Kw {
 		case Kws_.Quit, Kws_.Return:
 			if goto1.S == "" {
-				os.Exit(0)
+				util4.Exit__(0)
 				return
 			}
 			i, err2 := strconv.Atoi(goto1.S)
 			if err2 == nil {
-				os.Exit(i)
+				util4.Exit__(i)
 				return
 			}
 		}
 		util4.Errgotoln__(goto1)
-		os.Exit(252)
+		util4.Exit__(252)
 		return
 	}
 }
@@ -195,7 +194,7 @@ func (this *Zsp___) Z__() {
 		}
 		if err != nil {
 			util4.Errln__(err)
-			os.Exit(250)
+			util4.Exit__(250)
 			return
 		}
 
@@ -236,7 +235,7 @@ func (this *Zsp___) Z__() {
 		this.serve, err2 = New_serve__(this)
 		if err2 != nil {
 			util4.Errln__(err2)
-			os.Exit(255)
+			util4.Exit__(255)
 			return
 		}
 	}

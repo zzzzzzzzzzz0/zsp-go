@@ -31,7 +31,7 @@ func (this *Zsp___) flag2__(a []string, ss *Strings___) *Errinfo___ {
 		if !all_is {
 			if s == "-zsp-help" {
 				flag.PrintDefaults()
-				os.Exit(250)
+				util4.Exit__(250)
 			}
 			if s != "" && s[0] == '-' {
 				name := s[1:]

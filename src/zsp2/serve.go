@@ -3,8 +3,8 @@ package zsp2
 import (
 	"net"
 	. "net/http"
-	"os"
 	"strings"
+	"util4"
 )
 
 type Serve___ struct {
@@ -12,7 +12,7 @@ type Serve___ struct {
 }
 
 func (this *Serve___) Close__() {
-	os.Exit(0)
+	util4.Exit__(0)
 }
 
 func New_serve__(thiz *Zsp___) (srv *Serve___, err error) {

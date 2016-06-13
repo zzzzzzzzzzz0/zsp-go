@@ -20,6 +20,10 @@ func Errgotoln__(g *Goto___) {
 	Errln__(New_errinfo__("无法到达目标", g.S, g.Kw))
 }
 
+func Exit__(i int) {
+	os.Exit(i)
+}
+
 type zs_cmd___ struct {
 	i io.WriteCloser
 	o, e *Zs_writer___
