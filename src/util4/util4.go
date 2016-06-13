@@ -110,7 +110,19 @@ ret__ func(...interface{}), c *Chan___) (no_use bool, goto1 *Goto___) {
 		}
 		switch(s[0]) {
 		case "新建":
-			ret__(New_strings__())
+			i := 1
+			if len(s) >= 2 {
+				s1, ok := s__(s[1]); if !ok {return}
+				var err error
+				i, err = strconv.Atoi(s1)
+				if err != nil {
+					err__(err)
+					return
+				}
+			}
+			for ; i > 0; i-- {
+				ret__(New_strings__())
+			}
 		case "增至", "不重复增至":
 			var (
 				a *Strings___
@@ -165,9 +177,8 @@ ret__ func(...interface{}), c *Chan___) (no_use bool, goto1 *Goto___) {
 			} else {
 				i = 0
 			}
-			for i2 := 1; i >= 0 && i < a.Len__(); i2++ {
-				s2 := a.A[i]
-				buf, goto1, err1 = Zs2__(code, qv, s2, Itoa__(i2))
+			for i >= 0 && i < a.Len__() {
+				buf, goto1, err1 = Zs2__(code, qv, a.A[i], Itoa__(i + 1))
 				if err1 != nil {
 					err__(err1)
 					break
@@ -205,6 +216,26 @@ ret__ func(...interface{}), c *Chan___) (no_use bool, goto1 *Goto___) {
 				if s2 == s1 {
 					ret__(Itoa__(i + 1))
 					return
+				}
+			}
+		case "长度", "得", "设":
+			a, ok := s[1].(*Strings___)
+			if !ok {
+				err__("")
+				return
+			}
+			switch s[0] {
+			case "长度":
+				ret__(Itoa__(a.Len__()))
+			case "得":
+				for i := 2; i < len(s); i++ {
+					si, ok := s__(s[i]); if !ok {return}
+					i2, err := strconv.Atoi(si)
+					if err != nil {
+						err__(err)
+						return
+					}
+					ret__(a.A[i2 - 1])
 				}
 			}
 		default:
