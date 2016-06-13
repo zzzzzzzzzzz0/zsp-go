@@ -16,30 +16,53 @@ type item___ struct {
 	re *regexp.Regexp
 }
 
+func (this *C___) help__() (ret string) {
+	this.items.Find__(func(e *zhscript.Em___)bool {
+		item := e.Value.(*item___)
+		if item.tag != "" {
+			ret += item.tag + "\t"
+		}
+		ret += item.help + "\n"
+		return false
+	})
+	return
+}
+
 func (this *C___) Z__(qv *zhscript.Qv___, k string, s []interface{}, s__ func(interface{}) (string, bool),
 err__ func(...interface{}), ret__ func(...interface{})) (no_use bool, goto1 *zhscript.Goto___) {
 	switch k {
 	case "命令行加回调":
 		for i := 0; i < len(s); i++ {
 			tag, ok := s__(s[i]); if !ok {return}
-			item := &item___{}
+			var typ string
 			if util4.Ends__(tag, "...") {
 				tag = tag[0:len(tag) - 3]
-				item.typ = "..."
+				typ = "..."
 			}
-			item.tag = tag
-			switch tag {
-			case "":
-				tag = "(.*)"
-			default:
-				tag = "^" + tag + "$"
+
+			var item *item___
+			has := this.items.Find__(func(e *zhscript.Em___)bool {
+				item = e.Value.(*item___)
+				return item.tag == tag
+			})
+
+			if !has {
+				item = &item___{}
+				item.tag = tag
+				item.typ = typ
+				switch tag {
+				case "":
+					tag = "(.*)"
+				default:
+					tag = "^" + tag + "$"
+				}
+				re, err := regexp.Compile(tag)
+				if err != nil {
+					err__(err)
+					return
+				}
+				item.re = re
 			}
-			re, err := regexp.Compile(tag)
-			if err != nil {
-				err__(err)
-				return
-			}
-			item.re = re
 
 			i++
 			if i >= len(s) {
@@ -58,7 +81,9 @@ err__ func(...interface{}), ret__ func(...interface{})) (no_use bool, goto1 *zhs
 				item.code = item.help
 			}
 
-			this.items.PushBack(item)
+			if !has {
+				this.items.PushBack(item)
+			}
 		}
 		return
 	case "命令行解析":
@@ -128,21 +153,18 @@ err__ func(...interface{}), ret__ func(...interface{})) (no_use bool, goto1 *zhs
 				}
 				continue
 			}
+			switch s2 {
+			case "-h", "--help":
+				print(this.help__())
+				util4.Exit__(100)
+				return
+			}
 			err__("无法" + k, s2)
 			return
 		}
 		return
 	case "命令行帮助":
-		var ret string
-		this.items.Find__(func(e *zhscript.Em___)bool {
-			item := e.Value.(*item___)
-			if item.tag != "" {
-				ret += item.tag + "\t"
-			}
-			ret += item.help + "\n"
-			return false
-		})
-		ret__(ret)
+		ret__(this.help__())
 		return
 	}
 	no_use = true
