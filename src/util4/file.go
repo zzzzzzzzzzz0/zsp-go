@@ -119,6 +119,8 @@ ret__ func(...interface{}), c *Chan___) (no_use bool, goto1 *Goto___) {
 				}
 			case "净":
 				ret__(filepath.Clean(filename))
+			case "最终":
+				ret__(Finalfilename__(filename))
 			case "大小":
 				if stat__() {
 					ret__(strconv.FormatInt(fi.Size(), 10))
