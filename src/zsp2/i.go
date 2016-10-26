@@ -91,15 +91,22 @@ tag string, s ...interface{}) {
 			}
 			if data, ok := qv.Not_my.(*data___); ok {
 				url, ok := s__(s[0]); if !ok {break loop}
+				r := data.r
 				typ := "u"
 				for i := 1; i < len(s); i++ {
-					typ, ok = s__(s[i]); if !ok {break loop}
+					s1, ok := s__(s[i]); if !ok {break loop}
+					switch s1 {
+					case "参":
+						url += r.URL.RawQuery
+						continue
+					}
+					typ = s1
 				}
 				switch(typ) {
 				case "f":
-					http.ServeFile(*data.w, data.r, url)
+					http.ServeFile(*data.w, r, url)
 				case "u":
-					http.Redirect(*data.w, data.r, url, http.StatusMovedPermanently)
+					http.Redirect(*data.w, r, url, http.StatusMovedPermanently)
 				default:
 					buzhichi__(typ)
 				}
