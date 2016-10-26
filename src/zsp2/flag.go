@@ -76,10 +76,10 @@ func (this *Zsp___) flag2__(a []string, ss *Strings___) *Errinfo___ {
 var zsp_clpars_ bool
 
 func (this *Zsp___) flag__(root *string, is_serve *bool, ss *Strings___) (err *Errinfo___) {
-	flag.StringVar(root, "r", ".", "根")
-	flag.StringVar(&this.addr, "a", ":0", "侦听地址")
-	flag.StringVar(&this.index, "i", "", "索引页")
-	flag.BoolVar(is_serve, "s", true, "做为服务")
+	flag.StringVar(root, "zsp-root", ".", "根")
+	flag.StringVar(&this.addr, "zsp-addr", ":0", "侦听地址")
+	flag.StringVar(&this.index, "zsp-index", "", "索引页")
+	flag.BoolVar(is_serve, "zsp-serve", true, "做为服务")
 	
 	flag.BoolVar(&zsp_clpars_, "zsp-clpars", true, "")
 
@@ -89,7 +89,7 @@ func (this *Zsp___) flag__(root *string, is_serve *bool, ss *Strings___) (err *E
 	a := os.Args
 
 	this.pgrname = a[0]
-	this.finalpgrname = util4.Finalpgrname__(this.pgrname)
+	this.finalpgrname = util4.Finalfilename__(this.pgrname)
 	Known_path_add__(this.finalpgrname)
 	ss.Add__(this.finalpgrname)
 
