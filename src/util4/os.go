@@ -45,7 +45,7 @@ func cmd__(s []interface{}, i1 int, s__ func(interface{}) (string, bool)) *exec.
 	return exec.Command(name, args...)
 }
 
-func Finalpgrname__(ret string) string {
+func Finalfilename__(ret string) string {
 	wd__ := func(ret string) string {
 		if !Starts__(ret, "/") {
 			dir, err := os.Getwd()

@@ -1,4 +1,4 @@
-#!../bin/zsp -zhscript-o-ansi -zhscript-o-lc2 -zhscript-o-lc -zhscript-o-tree -s=0 --。
+#!../bin/zsp -zhscript-o-ansi -zhscript-o-lc2 -zhscript-o-lc -zhscript-o-tree -zsp-serve=0 --。
 <%
 赋予名以1.png。
 如果我的尾匹配、‘名’、.png等于0

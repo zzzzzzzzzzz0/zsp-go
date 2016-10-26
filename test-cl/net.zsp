@@ -1,2 +1,2 @@
-#!../bin/zsp -s=0 --。
+#!../bin/zsp -zsp-serve=0 --。
 <%我的抓网页、http://baidu.com%>
