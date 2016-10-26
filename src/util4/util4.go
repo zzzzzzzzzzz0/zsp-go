@@ -15,7 +15,7 @@ err__ func(...interface{}), buzu__ func(int) bool, buzhichi__ func(...interface{
 	}
 	a, ok := s[1].(*Strings___)
 	if !ok {
-		err__("")
+		err__("非法数组地址")
 		return
 	}
 	len1 := len(s) - 1
@@ -236,6 +236,21 @@ ret__ func(...interface{}), c *Chan___) (no_use bool, goto1 *Goto___) {
 						return
 					}
 					ret__(a.A[i2 - 1])
+				}
+			case "设":
+				for i := 2; i < len(s); i++ {
+					si, ok := s__(s[i]); if !ok {return}
+					i2, err := strconv.Atoi(si)
+					if err != nil {
+						err__(err)
+						return
+					}
+					i++
+					if buzu__(i + 1) {
+						return
+					}
+					si, ok = s__(s[i]); if !ok {return}
+					a.A[i2 - 1] = si
 				}
 			}
 		default:
