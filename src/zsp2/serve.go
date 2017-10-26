@@ -45,6 +45,9 @@ func New_serve__(thiz *Zsp___) (srv *Serve___, err error) {
 	}
 	thiz.addr = addr
 	println("addr " + thiz.addr)
+	if thiz.hou_code != "" {
+		thiz.zs__(thiz.hou_code, false)
+	}
 	err = srv.Serve(l)
 	return
 }

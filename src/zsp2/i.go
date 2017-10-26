@@ -181,6 +181,12 @@ tag string, s ...interface{}) {
 		case "侦听地址":
 			ret__(this.addr)
 			break loop
+		case "址后代码":
+			if buzu__(1) {
+				break loop
+			}
+			this.hou_code, _ = s__(s[0])
+			break loop
 		case "服务关闭":
 			this.serve.Close__()
 			break loop

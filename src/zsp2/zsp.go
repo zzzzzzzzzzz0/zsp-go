@@ -35,6 +35,7 @@ type Zsp___ struct {
 	weizhuang map[*weizhuang___]string
 	clpars *clpars4.C___
 	serve *Serve___
+	hou_code string
 }
 
 type weizhuang___ struct {
@@ -133,8 +134,8 @@ func (this *Zsp___) set_main_qv_var__(name2, val2 string) {
 	this.main_qv.Set_var__(name, val, nil, Kws_.Set)
 }
 
-func (this *Zsp___) zs__(src string) {
-	buf, goto1, err := util4.Zs__(src, true, "",
+func (this *Zsp___) zs__(src string, src_is_file bool) {
+	buf, goto1, err := util4.Zs__(src, src_is_file, "",
 		this.main_qv, nil, this.main_qv.Args.A__()...)
 	fmt.Print(buf.S__())
 	if err != nil {
@@ -226,7 +227,7 @@ func (this *Zsp___) Z__() {
 		this.set_main_qv_var__("根", root)
 
 		if this.z.Args.Src_type == Src_is_file_ {
-			this.zs__(this.z.Args.Src)
+			this.zs__(this.z.Args.Src, true)
 		}
 	}
 	if is_serve {
